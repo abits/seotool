@@ -2,15 +2,25 @@
 from flask import Flask
 from flask.ext.mongokit import Connection
 from flask.ext.login import LoginManager
-from config import basedir
 
 app = Flask(__name__)
-app.config.from_object('config')
-lm = LoginManager()
-lm.init_app(app)
-lm.login_view = 'login'
-lm.login_message = 'Please log in to access this page.'
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+#login_manager.login_message = 'Please log in to access this page.'
+
+app.config.from_pyfile('../config.py')
+connection = Connection(app.config['MONGODB_HOST'],
+                        app.config['MONGODB_PORT'])
+db = connection[app.config['MONGODB_NAME']]
 
 
-from seotool import views, models
+@login_manager.user_loader
+def load_user(user_id):
+    collection = db.users
+    return collection.User.one({'username': user_id})
+
+
+from seotool import views, model
+connection.register([model.User])
 
