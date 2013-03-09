@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <title>seotool - Google Analytics Report Generator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,9 +11,9 @@
     <!-- Le styles -->
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
+        body {
+            padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+        }
     </style>
     <link href="{{ url_for('static', filename='css/bootstrap-responsive.min.css') }}" rel="stylesheet">
 
@@ -21,38 +21,49 @@
     <!--[if lt IE 9]>
       <script src="{{ url_for('static', filename='js/html5shiv.js') }}"></script>
     <![endif]-->
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
         <div class="container">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="brand" href="#">seotool</a>
-          <div class="nav-collapse collapse pull-right">
-            <ul class="nav">
-            <li><a href="{{ url_for('login') }}">Login</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
+            {% block brand %}
+                <a class="brand" href="#">seotool</a>
+            {% endblock %}
+            {% block settings %}
+                <div class="btn-group pull-right">
+                    {% if g.user.is_authenticated() %}
+                        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                            <span class="icon-user"></span>
+                            {{ g.user.username }}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                        </ul>
+                    {% else %}
+                        <a class="btn" href="{{ url_for('login') }}">
+                            <span class="icon-user"></span>
+                            Login
+                        </a>
+                    {% endif %}
+                </div>
+            {% endblock %}
         </div>
-      </div>
     </div>
+</div>
 
-    <div class="container">
-      {% block container %}
+<div class="container span10 offset1">
+    {% block container %}
 
-      {% endblock container %}
-    </div> <!-- /container -->
+    {% endblock container %}
+</div> <!-- /container -->
 
-    <script src="http://code.jquery.com/jquery.js"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
 
-  </body>
+</body>
 </html>
 

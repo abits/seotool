@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block container %}
+    <div class="span4    offset3   ">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert fade in">
+                    {{ message }}
+                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+        <form method="post" action="{{ url_for('login') }}" name="login" class="form-signin">
+            <h3 class="form-signin-heading">Please sign in</h3>
+            {{ form.hidden_tag() }}
+            {{ form.username(placeholder='Username', class="input-block-level") }}
+            {{ form.password(placeholder='Password', class="input-block-level") }}
+            <label class="checkbox">
+                {{ form.remember_me }}&nbsp;{{ form.remember_me.description }}
+            </label>
+        <button class="btn btn-primary btn-primary" type="submit">Sign in</button>
+    </form>
+    </div>
+{% endblock %}

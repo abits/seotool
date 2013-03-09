@@ -2,14 +2,24 @@
 import tools
 from flask.ext.mongokit import Document
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 
 class User(Document):
     structure = {
         'username': unicode,
+        'firstname': unicode,
+        'lastname': unicode,
         'email': unicode,
-        'pw_hash': str,
-        'accounts': dict
+        'pw_hash': basestring,
+        'accounts': dict,
+        'last_login': {
+            'date': datetime,
+            'ip': basestring
+        },
+        'created_at': datetime,
+        'modified_at': datetime,
+        'deleted_at': datetime,
     }
     validators = {
         'username': tools.max_length(50),

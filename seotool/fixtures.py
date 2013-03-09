@@ -2,6 +2,7 @@
 from flask import Flask
 from flask.ext.mongokit import Connection
 from model import User
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -23,6 +24,11 @@ def create_admin_user():
         admin.username = u'admin'
         admin.email = u'test_admin@localhost'
         admin.accounts = {}
+        admin.firstname = u'Admin'
+        admin.lastname = u'Admin'
+        admin.created_at = datetime.utcnow()
+        admin.modified_at = datetime.utcnow()
+        admin.deleted_at = None
         admin.set_password('password')
         admin.save()
 
