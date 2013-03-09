@@ -18,6 +18,7 @@ def dashboard():
 @app.route('/logout')
 def logout():
     logout_user()
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['POST', 'GET'])
