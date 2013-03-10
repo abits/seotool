@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from seotool import app, db
-from forms import LoginForm
+from forms import LoginForm, AccountAddForm
 from datetime import datetime
 
 
@@ -11,10 +11,18 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/accounts', methods=['POST', 'GET'])
 @login_required
-@app.route('/accounts')
 def accounts_list():
-    return render_template('accounts.html')
+    form = AccountAddForm()
+
+    # wenn post & valide => return Hallo
+    # wenn post & nicht valide => redirect auf /accounts#add-account-modal, mit flash im modal!
+    # wenn get => return accounts-template
+
+    if form.validate_on_submit():
+        return "Hallo"
+    return render_template('accounts.html', form=form)
 
 
 @app.route('/logout')
