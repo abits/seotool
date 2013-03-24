@@ -23,7 +23,7 @@ def create_admin_user():
         admin = users.User()
         admin.username = u'admin'
         admin.email = u'test_admin@localhost'
-        admin.accounts = {}
+        admin.credentials = {}
         admin.firstname = u'Admin'
         admin.lastname = u'Admin'
         admin.created_at = datetime.utcnow()

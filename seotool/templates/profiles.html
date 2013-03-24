@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+{% block container %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert fade in">
+                    {{ message }}
+                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div>
+        <h4>Profiles</h4>
+{#        <a href="#add" role="button" class="btn" type="button" data-toggle="modal">Add account</a>#}
+        <hr>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Site</th>
+                <th>Id</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+                {% for item in profiles['items'] %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.name|e }}</td>
+                        <td>{{ item.id }}</td>
+                        <td><a class="btn"
+                               href="{{ url_for('report', account_id=item.id) }}">Report</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+        </table>
+    </div>
+    <div id="add" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel">Add Google Account</h3>
+        </div>
+{#        <form method="post" action="{{ url_for('accounts_list') }}" name="accounts" class="form-signin">#}
+{#            <div class="modal-body">#}
+{#                <h3 class="form-accounts-heading">Please enter</h3>#}
+{#                <p class="warning">Be sure to <a href="https://accounts.google.com/logout">log out</a> from Google before proceeding.</p>#}
+{#                {{ form.hidden_tag() }}#}
+{#                {{ form.account(placeholder='Google Mail Address', class="input-block-level") }}#}
+{#            </div>#}
+{#            <div class="modal-footer">#}
+{#                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>#}
+{#                <button class="btn btn-primary" type="submit">Add</button>#}
+{#            </div>#}
+{#        </form>#}
+    </div>
+{% endblock %}

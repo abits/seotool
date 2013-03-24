@@ -12,7 +12,7 @@ class User(Document):
         'lastname': unicode,
         'email': unicode,
         'pw_hash': basestring,
-        'accounts': dict,
+        'credentials': dict,
         'last_login': {
             'date': datetime,
             'ip': basestring
