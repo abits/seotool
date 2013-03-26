@@ -1,13 +1,14 @@
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from seotool import app, db
-from forms import LoginForm, AccountAddForm
-from datetime import datetime
+from seotool import app, db, tools
+from forms import LoginForm
+from datetime import datetime, date
 from apiclient.discovery import build
 from oauth2client.client import AccessTokenRefreshError, OAuth2Credentials
 from apiclient.errors import HttpError
 from httplib2 import Http
 import json
+import providers
 
 
 
@@ -21,51 +22,26 @@ def index():
 @login_required
 @app.route('/report/<account_id>')
 def report(account_id):
-    credentials = OAuth2Credentials.from_json(json.dumps(g.user.credentials))
-    if credentials is None or credentials.invalid:
-        msg = '1 Please reauthorize the application to Google.'
-        flash(msg)
-        return redirect(url_for('profiles'))
-    http = Http()
     try:
-        http = credentials.authorize(http)
-        service = build('analytics', 'v3', http=http)
-    except AccessTokenRefreshError:
-        msg = '2 Please reauthorize the application to Google.'
-        flash(msg)
-        return redirect(url_for('profiles'))
-
-    try:
-        webproperties = service.management().webproperties().list(accountId=account_id).execute()
-        if webproperties.get('items'):
-            # Get the first Web Property ID
-            firstWebpropertyId = webproperties.get('items')[0].get('id')
-
-            # Get a list of all Profiles for the first Web Property of the first Account
-            profiles = service.management().profiles().list(
-                accountId=account_id,
-                webPropertyId=firstWebpropertyId).execute()
-
-            if profiles.get('items'):
-                # return the first Profile ID
-                profile_id = profiles.get('items')[0].get('id')
-
-        try:
-            data = service.data().ga().get(
-              ids='ga:' + profile_id,
-              start_date='2009-03-03',
-              end_date='2010-03-03',
-              metrics='ga:visits',
-              dimensions='ga:month').execute()
-        except HttpError:
-            data = {}
-        print data
-    except AccessTokenRefreshError:
+        al = providers.Analytics()
+        profile_id = al.get_profile_id(account_id)
+        parameters = {
+            'ids': profile_id,
+            'start_date': date(2009, 3, 3),
+            'end_date': date(2010, 3, 3),
+            'metrics': 'visits',
+            'dimensions': 'month'
+        }
+        data = al.retrieveData(parameters)
+        chart_file = tools.render_line_chart(data)
+    except providers.InvalidCredentialsError:
+        data = {}
+        chart_file = ''
         msg = '3 Please reauthorize the application to Google.'
         flash(msg)
         return redirect(url_for('profiles'))
 
-    return render_template('report.html', data=data)
+    return render_template('report.html', data=data, chart_file=chart_file)
 
 
 @login_required
