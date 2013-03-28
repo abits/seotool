@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+# Views modules.  Controller which handle the request-response-flow.  They typically call services to provide
+# data and perform actions.  They should not communicate directly with models and providers.
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from seotool import app, db, tools
-from forms import LoginForm
+from forms import LoginForm, ReportConfigurationForm
 from datetime import datetime, date
 from apiclient.discovery import build
 from oauth2client.client import AccessTokenRefreshError, OAuth2Credentials
@@ -20,8 +23,21 @@ def index():
 
 
 @login_required
-@app.route('/report/<account_id>')
+@app.route('/report/configure/<profile_id>', methods=['POST', 'GET'])
+def report_configure(profile_id):
+    form = ReportConfigurationForm()
+    if form.validate_on_submit():
+        pass
+
+    return render_template('report_config.html',
+                           form=form,
+                           profile_id=profile_id)
+
+
+@login_required
+@app.route('/report/<account_id>', methods=['POST'])
 def report(account_id):
+    print(request.values['include_visitors'])
     try:
         al = providers.Analytics()
         profile_id = al.get_profile_id(account_id)
@@ -77,7 +93,7 @@ def logout():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('accounts_list'))
+        return redirect(url_for('profiles'))
     form = LoginForm()
     if form.validate_on_submit():
         user = db.users.User.one({'username': form.username.data})

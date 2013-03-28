@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+# Providers module.
+# Provider classes handle the communication with remote services to provide external data for the system, e.g.
+# calling Google Analytics API and provide table data.  Providers simple _serve_ the data, they do not transform
+# the data.  They however extract the data from the api response in an easily consumable format,
+# e.g. lists of integers etc.
+
 from flask import g
 from apiclient.discovery import build
 from oauth2client.client import AccessTokenRefreshError, OAuth2Credentials
@@ -62,6 +69,7 @@ class Analytics(object):
         end_date = parameters['end_date'].isoformat()
         dimensions = 'ga:' + parameters['dimensions']
         metrics = 'ga:' + parameters['metrics']
+
         data = self._service.data().ga().get(ids=ids,
                                              start_date=start_date,
                                              end_date=end_date,

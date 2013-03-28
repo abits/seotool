@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+# Tools module.
+# This module contains static helper functions.  They should receive all dependencies as parameters.
+
 from reportlab.graphics.charts.linecharts import HorizontalLineChart
 from reportlab.graphics.shapes import *
 from reportlab.lib.styles import getSampleStyleSheet
