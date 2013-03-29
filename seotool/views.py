@@ -30,7 +30,7 @@ def report_create(profile_id):
 
     :param profile_id: GA profile id for which to create report.
     :type profile_id: str
-    :return: Render template
+    :return: Http response
     """
     form = ReportConfigurationForm(request.form)
     if form.validate_on_submit():
@@ -60,7 +60,8 @@ def report(report_id):
             'dimensions': 'month'
         }
         data = al.retrieveData(parameters)
-        chart_file = tools.render_line_chart(data)
+        cm = services.ChartManager()
+        chart_file = cm.render_line_chart(data)
     except providers.InvalidCredentialsError:
         data = {}
         chart_file = ''
