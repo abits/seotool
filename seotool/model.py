@@ -30,6 +30,7 @@ class User(Document):
     }
 
     use_dot_notation = True
+    use_autorefs = True
 
     def set_password(self, password):
         self.pw_hash = generate_password_hash(password)
@@ -55,26 +56,17 @@ class User(Document):
 
 class Report(Document):
     structure = {
-        'username': unicode,
-        'firstname': unicode,
-        'lastname': unicode,
-        'email': unicode,
-        'pw_hash': basestring,
-        'credentials': dict,
-        'last_login': {
-            'date': datetime,
-            'ip': basestring
-        },
+        'profile_id': unicode,
+        'last_author': User,
+        'configuration': dict,
         'created_at': datetime,
         'modified_at': datetime,
         'deleted_at': datetime,
-        }
-    validators = {
-        'username': tools.max_length(50),
-        'email': tools.max_length(120)
+        'file': unicode
     }
 
     use_dot_notation = True
+    use_autorefs = True
 
 
 class BaseChart(object):

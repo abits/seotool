@@ -3,7 +3,7 @@
 # data and perform actions.  They should not communicate directly with models and providers.
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from seotool import app, db, tools
+from seotool import app, db, tools, services
 from forms import LoginForm, ReportConfigurationForm
 from datetime import datetime, date
 from apiclient.discovery import build
@@ -23,11 +23,22 @@ def index():
 
 
 @login_required
-@app.route('/report/configure/<profile_id>', methods=['POST', 'GET'])
-def report_configure(profile_id):
-    form = ReportConfigurationForm()
+@app.route('/report/create/<profile_id>', methods=['POST', 'GET'])
+def report_create(profile_id):
+    """
+    Generate a persistent report object and corresponding pdf output.
+
+    :param profile_id: GA profile id for which to create report.
+    :type profile_id: str
+    :return: Render template
+    """
+    form = ReportConfigurationForm(request.form)
     if form.validate_on_submit():
-        pass
+        report_manager = services.ReportManager()
+        report_id = report_manager.create_report(profile_id, g.user)
+        report_manager.update_configuration(report_id, form.data)
+        report_manager.save_pdf(report_id)
+        return redirect(url_for('profiles'))
 
     return render_template('report_config.html',
                            form=form,
@@ -35,12 +46,12 @@ def report_configure(profile_id):
 
 
 @login_required
-@app.route('/report/<account_id>', methods=['POST'])
-def report(account_id):
+@app.route('/report/<report_id>', methods=['GET'])
+def report(report_id):
     print(request.values['include_visitors'])
     try:
         al = providers.Analytics()
-        profile_id = al.get_profile_id(account_id)
+        profile_id = al.get_profile_id(report_id)
         parameters = {
             'ids': profile_id,
             'start_date': date(2009, 3, 3),

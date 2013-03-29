@@ -29,7 +29,7 @@
                         <td>{{ item.name|e }}</td>
                         <td>{{ item.id }}</td>
                         <td><a class="btn"
-                               href="{{ url_for('report_configure', profile_id=item.id) }}">Report</a>
+                               href="{{ url_for('report_create', profile_id=item.id) }}">Report</a>
                         </td>
                     </tr>
                 {% endfor %}

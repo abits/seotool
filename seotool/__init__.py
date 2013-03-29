@@ -23,4 +23,5 @@ def load_user(user_id):
 
 from seotool import views, model
 connection.register([model.User])
+connection.register([model.Report])
 

@@ -21,5 +21,5 @@ class AccountAddForm(Form):
 class ReportConfigurationForm(Form):
     summary = TextAreaField('Summary', validators=[Length(max=4096)])
     include_visitors = BooleanField('Visitors in time', description='Visitors in time', default=True)
-    visitors_month = DateField('Visitors in month', description='Visitors in month')
-    include_visitor_types = BooleanField('Visitor types', description='Visitor types', default=True)
+    # visitors_month = DateField('Visitors in month', description='Visitors in month')
+    # include_visitor_types = BooleanField('Visitor types', description='Visitor types', default=True)
