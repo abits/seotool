@@ -39,24 +39,33 @@ class Analytics(object):
                 raise InvalidCredentialsError('Invalid token')
 
     def get_profile_id(self, account_id):
+        """
+        Convert GA account id in profile id.
+        :param account_id: GA account id
+        :type account_id: str
+        :return: id of first GA profile in account
+        :rtype: str
+        """
         self.initialize_service()
         profile_id = None
-        webproperties = self._service.management().webproperties().list(accountId=account_id).execute()
-        if webproperties.get('items'):
+        web_properties = self._service.management().webproperties().list(
+            accountId=account_id).execute()
+        if web_properties.get('items'):
             # Get the first Web Property ID
-            firstWebpropertyId = webproperties.get('items')[0].get('id')
+            first_web_property_id = web_properties.get('items')[0].get('id')
 
-            # Get a list of all Profiles for the first Web Property of the first Account
+            # Get a list of all Profiles for the first Web Property of the
+            # first Account
             profiles = self._service.management().profiles().list(
                 accountId=account_id,
-                webPropertyId=firstWebpropertyId).execute()
+                webPropertyId=first_web_property_id).execute()
 
             if profiles.get('items'):
                 # return the first Profile ID
                 profile_id = profiles.get('items')[0].get('id')
         return profile_id
 
-    def retrieveData(self, parameters):
+    def retrieveData(self, **kwargs):
         rows = []
         sequence = []
         try:
@@ -64,11 +73,11 @@ class Analytics(object):
         except InvalidCredentialsError:
             pass
 
-        ids = 'ga:' + parameters['ids']
-        start_date = parameters['start_date'].isoformat()
-        end_date = parameters['end_date'].isoformat()
-        dimensions = 'ga:' + parameters['dimensions']
-        metrics = 'ga:' + parameters['metrics']
+        ids = 'ga:' + kwargs['profile_id']
+        start_date = kwargs['start_date'].isoformat()
+        end_date = kwargs['end_date'].isoformat()
+        dimensions = 'ga:' + kwargs['dimensions']
+        metrics = 'ga:' + kwargs['metrics']
 
         data = self._service.data().ga().get(ids=ids,
                                              start_date=start_date,
@@ -82,6 +91,11 @@ class Analytics(object):
         rows.append(data)
 
         return rows
+
+    def retrieveVisitorsData(self, **kwargs):
+        kwargs['dimensions'] = 'visits'
+        kwargs['metrics'] = 'months'
+        return self.retrieveData(kwargs)
 
 
 

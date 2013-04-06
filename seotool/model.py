@@ -6,6 +6,8 @@ import tools
 from flask.ext.mongokit import Document
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from reportlab.graphics.charts.linecharts import HorizontalLineChart
+from reportlab.graphics.shapes import *
 
 
 class User(Document):
@@ -70,4 +72,32 @@ class Report(Document):
 
 
 class BaseChart(object):
-    pass
+    data = []
+
+
+class LineChart(BaseChart):
+
+    def __init__(self, data):
+        self.data = data
+
+    def get_drawing(self):
+        drawing = Drawing(600, 250)
+        lc = HorizontalLineChart()
+        lc.x = 50
+        lc.y = 50
+        lc.height = 250
+        lc.width = 600
+        lc.data = self.data
+        lc.joinedLines = 1
+        lc.categoryAxis.labels.boxAnchor = 'n'
+        lc.valueAxis.valueMin = 0
+        lc.valueAxis.valueMax = 2000
+        lc.valueAxis.valueStep = 500
+        lc.lines[0].strokeWidth = 2.5
+        drawing.add(lc)
+        return drawing
+
+
+
+
+

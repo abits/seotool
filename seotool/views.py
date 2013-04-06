@@ -4,7 +4,7 @@
 from flask import render_template, flash, redirect, session, url_for, request, g, jsonify
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from seotool import app, db, tools, services
-from forms import LoginForm, ReportConfigurationForm
+from forms import LoginForm, ReportConfigurationForm, ChartConfigurationForm
 from datetime import datetime, date
 from apiclient.discovery import build
 from oauth2client.client import AccessTokenRefreshError, OAuth2Credentials
@@ -33,11 +33,14 @@ def report_create(profile_id):
     :return: Http response
     """
     form = ReportConfigurationForm(request.form)
+    print(form)
+
     if form.validate_on_submit():
+        print form.data
         report_manager = services.ReportManager()
-        report_id = report_manager.create_report(profile_id, g.user)
-        report_manager.update_configuration(report_id, form.data)
-        report_manager.save_pdf(report_id)
+        report = report_manager.create_report(profile_id, g.user)
+        report_manager.update_configuration(report, form.data)
+        report_manager.generate_pdf(report)
         return redirect(url_for('profiles'))
 
     return render_template('report_config.html',
@@ -136,7 +139,7 @@ def oauth_step1():
 def oauth_step_2():
     credentials = app.config['FLOW'].step2_exchange(request.args['code'])
     g.user.credentials = json.loads(credentials.to_json())
-    g.user.save()
+    g.user.build()
     return redirect(url_for('profiles'))
 
 

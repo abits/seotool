@@ -30,7 +30,7 @@ def create_admin_user():
         admin.modified_at = datetime.utcnow()
         admin.deleted_at = None
         admin.set_password('password')
-        admin.save()
+        admin.build()
 
 if __name__ == '__main__':
     load()
